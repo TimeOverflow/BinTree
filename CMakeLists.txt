@@ -4,4 +4,4 @@ project(BinTree)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(BinTree main.cpp
-                       BinNode.hpp)
+                       BinNode.hpp BinTree.hpp)
