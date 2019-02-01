@@ -26,16 +26,43 @@ public:
     {}
 
     //operation interface
+
     int size();      //sum of ancestors of this node
     BinNode<T>* insertAsLC (const T & e);
     BinNode<T>* insertAsRC (const T & e);
     BinNode<T>* succ();
 
-    //traverse
+    /*
+     * The following functions are all traverse operations,
+     * which includes level, pre, inoder and post.
+     */
     template <typename VST> void travLevel (VST&);
-    template <typename VST> void travPre (VST&);
-    template <typename VST> void travIn (VST&);
-    template <typename VST> void travPost (VST&);
+
+    template <typename VST> void travPre (VST& visit)
+    {
+        travPre_R(this, visit);
+    }
+    template <typename VST> void travIn (VST& visit)
+    {
+        travIn_R(this, visit);
+    }
+    template <typename VST> void travPost (VST& visit)
+    {
+        travPost_R(this, visit);
+    }
+
+    template <typename VST>
+    void travPre_R(BinNode<T>* x, VST& visit);  // Recursive PreTraverse
+
+    template <typename VST>
+    void travPost_R(BinNode<T>* x, VST& visit); // Recursive PostTraverse
+
+    template <typename VST>
+    void travIn_R(BinNode<T>* x, VST& visit);   // Recursive InoderTraverse
+
+    /*
+     * The end of declarations of traverse functions.
+     */
 
     //boolean operation
     bool operator< (const BinNode& bn)
@@ -94,7 +121,27 @@ public:
             }
         }
     }
+    BinNode<T>* fromParent()
+    {
+        if (isRoot())
+        {
+            return this;
+        }
+        else
+        {
+            if (isLChild())
+            {
+                return parent->lc;
+            }
+            else
+            {
+                return parent->rc;
+            }
+        }
+    }
+
 };
+
 
 template<typename T>
 BinNode<T> *BinNode<T>::insertAsLC(const T &e)
@@ -136,6 +183,45 @@ BinNode<T> *BinNode<T>::insertAsRC(const T &e)
         this->rc = rl;
     }
     return rl;
+}
+
+template <typename T>
+template <typename VST>
+void BinNode<T>::travPre_R(BinNode<T> *x, VST &visit)  //Recursive PreTraverse
+{
+    if (x == nullptr)
+    {
+        return;
+    }
+    visit(x->data);
+    travPre_R(x->lc, visit);
+    travPre_R(x->rc, visit);
+}
+
+template<typename T>
+template<typename VST>
+void BinNode<T>::travPost_R(BinNode<T> *x, VST &visit)
+{
+    if (x == nullptr)
+    {
+        return;
+    }
+    travPost_R(x->lc, visit);
+    travPost_R(x->rc, visit);
+    visit(x->data);
+}
+
+template<typename T>
+template<typename VST>
+void BinNode<T>::travIn_R(BinNode<T> *x, VST &visit)
+{
+    if (x == nullptr)
+    {
+        return;
+    }
+    travIn_R(x->lc, visit);
+    visit(x->data);
+    travIn_R(x->rc, visit);
 }
 
 
